@@ -43,6 +43,10 @@ class iRacerState:
         elif self.IsBackwards ():
             self.Direction = Direction.Backwards
 
+    def Stop (self):
+        self.Direction = Direction.Forwards
+        self.Speed = Speed.Stop
+
     def IncreaseSpeed (self):
         if self.Speed < self.MaxSpeed:
             self.Speed += 1
@@ -57,33 +61,53 @@ class iRacerState:
     def IsBackwards (self):
         return self.Direction == Direction.Backwards or self.Direction == Direction.BLeft or self.Direction == Direction.BRight
 
-##    def NewDirection (self, newDirection):
-##        if newDirection == Direction.Forwards and not self.IsForwards ():
-##            if self.Direction == Direction.BLeft:
-##                return Direction.FLeft
-##            if self.Direction == Direction.BRight:
-##                return Direction.FRight
-##            return Direction.Forwards
-##
-##        if newDirection == Direction.Backwards and not self.IsBackwards ():
-##            if self.Direction == Direction.FLeft:
-##                return Direction.BLeft
-##            if self.Direction == Direction.FRight:
-##                return Direction.BRight
-##            return Direction.Backwards
-##
-##        if newDirection == Direction.Left:
-##            if self.IsBackwards ():
-##                return Direction.BLeft
-##            if self.IsForwards ():
-##                return Direction.FLeft
-##            return Direction.Left
-##
-##        if newDirection == Direction.Right:
-##            if self.IsBackwards ():
-##                return Direction.BRight
-##            if self.IsForwards ():
-##                return Direction.FRight
-##            return Direction.Right
-##
-##        return self.Direction
+    def IsLeft (self):
+        return self.Direction == Direction.BLeft or self.Direction == Direction.FLeft or self.Direction == Direction.Left
+
+    def IsRight (self):
+        return self.Direction == Direction.BRight or self.Direction == Direction.FRight or self.Direction == Direction.Right
+
+    def SetDirection (self, newDirection):
+        if newDirection == Direction.Forwards:
+            if self.IsForwards ():
+                self.Accelerating = True
+            else:
+                self.Speed = 0x00
+                self.Accelerating = False
+                if self.Direction == Direction.BLeft:
+                    self.Direction = Direction.FLeft
+                elif self.Direction == Direction.BRight:
+                    self.Direction = Direction.FRight
+                else:
+                    self.Direction = Direction.Forwards
+
+        elif newDirection == Direction.Backwards:
+            if self.IsBackwards ():
+                self.IncreaseSpeed ()
+                self.Accelerating = True
+            else:
+                self.Speed = 0x00
+                self.Accelerating = False
+                if self.Direction == Direction.FLeft:
+                    self.Direction = Direction.BLeft
+                elif self.Direction == Direction.FRight:
+                    self.Direction = Direction.BRight
+                else:
+                    self.Direction = Direction.Backwards
+
+        elif newDirection == Direction.Left:
+            if self.IsBackwards ():
+                self.Direction = Direction.BLeft
+            elif self.IsForwards ():
+                self.Direction = Direction.FLeft
+            else:
+                self.Direction = Direction.Left
+
+        elif newDirection == Direction.Right:
+            if self.IsBackwards ():
+                self.Direction = Direction.BRight
+            elif self.IsForwards ():
+                self.Direction = Direction.FRight
+            else:
+                self.Direction = Direction.Right
+
