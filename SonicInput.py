@@ -34,8 +34,13 @@ class SonicInput (threading.Thread):
             turn = 0.0
             gas = 0.0
             while (True):
-                turn = (turn + self.TurnSensor.PingCM ())/2
-                gas = (gas + self.GasSensor.PingCM ())/2
+                turn0 = self.TurnSensor.PingCM ()
+                gas0 = self.GasSensor.PingCM ()
+                turn1 = self.TurnSensor.PingCM ()
+                gas1 = self.GasSensor.PingCM ()
+                
+                turn = (turn + turn0 + turn1 + self.TurnSensor.PingCM ())/4
+                gas = (gas + gas0 + gas1 + self.GasSensor.PingCM ())/4
                 print 'GAS:' + str(gas) + '  TURN:' + str(turn)
 
                 if turn > 30:
@@ -44,8 +49,6 @@ class SonicInput (threading.Thread):
                     self.iRacer.SetDirection (Direction.Left)
                 elif turn > 15:
                     self.iRacer.SetDirection (Direction.Right)
-                else:
-                    self.iRacer.Straighten ()
                 
                 if gas > 50:
                     self.iRacer.Accelerating = False
@@ -70,17 +73,17 @@ class SonicInput (threading.Thread):
         self.Screen.fill (WHITE)
 
         if self.iRacer.IsLeft ():
-            pygame.draw.polygon (self.Screen, BLACK, [[0,240],[40,480],[40,0]], 5)
+            pygame.draw.polygon (self.Screen, BLACK, [[0,240],[40,480],[40,0]])
         elif self.iRacer.IsRight ():
-            pygame.draw.polygon (self.Screen, BLACK, [[600,0],[600,480],[640,240]], 5)
+            pygame.draw.polygon (self.Screen, BLACK, [[600,0],[600,480],[640,240]])
 
         accel = RED
         if self.iRacer.Accelerating:
             accel = GREEN
             
         if self.iRacer.IsForwards ():
-            pygame.draw.polygon (self.Screen, accel, [[320,0],[340,40],[300,40]], 5)
+            pygame.draw.polygon (self.Screen, accel, [[320,0],[340,40],[300,40]])
         else:
-            pygame.draw.polygon (self.Screen, accel, [[300,440],[320,480],[340,440]], 5)
+            pygame.draw.polygon (self.Screen, accel, [[300,440],[320,480],[340,440]])
 
         pygame.display.flip ()
